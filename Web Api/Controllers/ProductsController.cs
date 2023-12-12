@@ -88,7 +88,7 @@ public class ProductsController : ControllerBase
         {
             await _productRepository.AddProductAsync(product, cancellationToken);
             _logger.LogInformation("product created: {value}", product.Id);
-            return Created($"api/Products/{product.Id}",product);
+            return Created($"api/Products/{product.Id}", product);
         }
         catch (Exception ex)
         {
@@ -106,11 +106,28 @@ public class ProductsController : ControllerBase
                 return BadRequest();
 
             _productRepository.UpdateProductAsync(product, cancellationToken);
+            _logger.LogInformation("Product data updated successfully: {value}", product.Id);
             return NoContent();
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            _logger.LogError("An error occurred while updating data", ex);
+            throw;
+        }
+    }
 
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteProduct(long id, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await _productRepository.DeleteProductAsync(id, cancellationToken);
+            _logger.LogInformation("deleted product: {value}", id);
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while deleting the product");
             throw;
         }
     }
