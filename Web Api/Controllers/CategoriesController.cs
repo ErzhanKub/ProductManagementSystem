@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Web_Api.Abstractions.Interfaces;
 using Web_Api.Models.Contracts;
-using Web_Api.Models.Entities;
 using Web_Api.Services;
 
 namespace Web_Api.Controllers

@@ -3,7 +3,7 @@ using Web_Api.Models.Contracts;
 
 namespace Web_Api.Middleware;
 
-internal sealed class ExceptionHandlingMiddlwere : IMiddleware
+public sealed class ExceptionHandlingMiddlwere : IMiddleware
 {
     private readonly ILogger<ExceptionHandlingMiddlwere> _logger;
 

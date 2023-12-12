@@ -26,5 +26,10 @@ public sealed class AppDbContext : DbContext
             v => JsonSerializer.Serialize(v, options),
             v => JsonSerializer.Deserialize<Dictionary<string, string>>(v, options));
 
+        modelBuilder.Entity<Product>()
+            .Property(c => c.AdditionalFields)
+            .HasConversion(
+            v => JsonSerializer.Serialize(v, options),
+            v => JsonSerializer.Deserialize<Dictionary<string, string>>(v, options));
     }
 }
