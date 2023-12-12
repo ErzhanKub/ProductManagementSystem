@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Web_Api.Interfaces;
-using WebApi.Models;
+using Web_Api.Abstractions.Interfaces;
+using Web_Api.Models.Entities;
 
 namespace Web_Api.Controllers;
 
@@ -10,11 +10,13 @@ public class ProductsController : ControllerBase
 {
     private readonly IProductRepository _productRepository;
     private readonly ILogger<ProductsController> _logger;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public ProductsController(IProductRepository productRepository, ILogger<ProductsController> logger)
+    public ProductsController(IProductRepository productRepository, ILogger<ProductsController> logger, IUnitOfWork unitOfWork)
     {
         _productRepository = productRepository ?? throw new ArgumentNullException(nameof(productRepository));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
     }
 
     [HttpGet]
@@ -22,7 +24,7 @@ public class ProductsController : ControllerBase
     {
         try
         {
-            var products = await _productRepository.GetProductsAsync(cancellationToken);
+            var products = await _productRepository.GetAsync(cancellationToken);
             _logger.LogInformation("All products received successfully");
             return Ok(products);
         }
@@ -38,7 +40,7 @@ public class ProductsController : ControllerBase
     {
         try
         {
-            var product = await _productRepository.GetProductByIdAsync(id, cancellationToken);
+            var product = await _productRepository.GetByIdAsync(id, cancellationToken);
             _logger.LogInformation("Product by ID successfully received: {value}", id);
             return Ok(product);
         }
@@ -86,7 +88,8 @@ public class ProductsController : ControllerBase
     {
         try
         {
-            await _productRepository.AddProductAsync(product, cancellationToken);
+            await _productRepository.AddAsync(product, cancellationToken);
+            await _unitOfWork.SaveAndCommitAsync(cancellationToken);
             _logger.LogInformation("product created: {value}", product.Id);
             return Created($"api/Products/{product.Id}", product);
         }
@@ -105,7 +108,8 @@ public class ProductsController : ControllerBase
             if (id != product.Id)
                 return BadRequest();
 
-            _productRepository.UpdateProductAsync(product, cancellationToken);
+            _productRepository.UpdateAsync(product, cancellationToken);
+            await _unitOfWork.SaveAndCommitAsync(cancellationToken);
             _logger.LogInformation("Product data updated successfully: {value}", product.Id);
             return NoContent();
         }
@@ -121,7 +125,8 @@ public class ProductsController : ControllerBase
     {
         try
         {
-            await _productRepository.DeleteProductAsync(id, cancellationToken);
+            await _productRepository.DeleteAsync(id, cancellationToken);
+            await _unitOfWork.SaveAndCommitAsync(cancellationToken);
             _logger.LogInformation("deleted product: {value}", id);
             return NoContent();
         }

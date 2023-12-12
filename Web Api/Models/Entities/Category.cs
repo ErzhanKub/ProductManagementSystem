@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace WebApi.Models;
+namespace Web_Api.Models.Entities;
 
 public sealed record Category
 {

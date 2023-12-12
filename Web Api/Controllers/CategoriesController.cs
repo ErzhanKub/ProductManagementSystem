@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Web_Api.Interfaces;
-using WebApi.Models;
+﻿using Microsoft.AspNetCore.Mvc;
+using Web_Api.Abstractions.Interfaces;
+using Web_Api.Models.Contracts;
+using Web_Api.Models.Entities;
+using Web_Api.Services;
 
 namespace Web_Api.Controllers
 {
@@ -9,80 +10,44 @@ namespace Web_Api.Controllers
     [ApiController]
     public class CategoriesController : ControllerBase
     {
-        private readonly ICategoryRepository _categoryRepository;
-        private readonly ILogger<CategoriesController> _logger;
+        private readonly CategoryService _categoryService;
 
-        public CategoriesController(ICategoryRepository categoryRepository, ILogger<CategoriesController> logger)
-        {
-            _categoryRepository = categoryRepository ?? throw new ArgumentNullException(nameof(categoryRepository));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        }
+        public CategoriesController(CategoryService categoryService) => _categoryService = categoryService ?? throw new ArgumentNullException(nameof(categoryService));
 
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetCategories(CancellationToken cancellationToken)
         {
-            try
-            {
-                var categories = await _categoryRepository.GetCategoriesAsync(cancellationToken);
-                _logger.LogInformation("Categories successfully received");
-                return Ok(categories);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while retrieving the category");
-                throw;
-            }
+            var response = await _categoryService.GetCategoriesAsync(cancellationToken);
+            if (response.IsSuccess)
+                return Ok(response.Value);
+            return BadRequest($"Operation failed: {response.Reasons}");
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateCategory([FromBody] Category category, CancellationToken cancellationToken)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> CreateCategory([FromBody] CategoryDto category, CancellationToken cancellationToken)
         {
-            try
-            {
-                await _categoryRepository.AddCategoryAsync(category, cancellationToken);
-                _logger.LogInformation("Created category: {value}", category.Id);
-                return Created($"api/Categories/{category.Id}", category);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while creating the category");
-                throw;
-            }
-        }
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCategory(long id, [FromBody] Category category, CancellationToken cancellationToken)
-        {
-            try
-            {
-                if (id != category.Id)
-                    return BadRequest();
-
-                _categoryRepository.UpdateCategoryAsync(category, cancellationToken);
-                _logger.LogInformation("Updated category: {category.Id}", category.Id);
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while updating the category");
-                throw;
-            }
+            var response = await _categoryService.CreateCategoryAsync(category, cancellationToken);
+            if (response.IsSuccess)
+                return Ok("Category created successfully");
+            return BadRequest($"Operation failed: {response.Reasons}");
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCategory(long id, CancellationToken cancellationToken)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> DeleteCategory([FromRoute] long id, CancellationToken cancellationToken)
         {
-            try
-            {
-                await _categoryRepository.DeleteCategoryAsync(id, cancellationToken);
-                _logger.LogInformation("Deleted category: {value}", id);
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while deleting a category");
-                throw;
-            }
+            var response = await _categoryService.DeleteCategoryAsync(id, cancellationToken);
+            if (response.IsSuccess)
+                return Ok("Category deleted successfully");
+            return BadRequest($"Operation failed: {response.Reasons}");
         }
     }
 }

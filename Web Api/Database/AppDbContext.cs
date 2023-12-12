@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
-using WebApi.Models;
+using Web_Api.Models.Entities;
 
 namespace WebApi.Database;
 

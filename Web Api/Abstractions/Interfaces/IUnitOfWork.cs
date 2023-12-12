@@ -1,4 +1,4 @@
-﻿namespace Web_Api.Interfaces;
+﻿namespace Web_Api.Abstractions.Interfaces;
 
 public interface IUnitOfWork
 {

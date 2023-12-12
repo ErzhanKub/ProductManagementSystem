@@ -1,20 +1,19 @@
-﻿using Web_Api.Interfaces;
+﻿using Web_Api.Abstractions.Interfaces;
 using WebApi.Database;
 
-namespace Web_Api.Database
+namespace Web_Api.Database;
+
+internal sealed class UnitOfWork : IUnitOfWork
 {
-    internal sealed class UnitOfWork : IUnitOfWork
+    private readonly AppDbContext _context;
+
+    public UnitOfWork(AppDbContext context)
     {
-        private readonly AppDbContext _context;
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+    }
 
-        public UnitOfWork(AppDbContext context)
-        {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-        }
-
-        public async Task SaveAndCommitAsync(CancellationToken cancellationToken)
-        {
-            await _context.SaveChangesAsync(cancellationToken);
-        }
+    public async Task SaveAndCommitAsync(CancellationToken cancellationToken)
+    {
+        await _context.SaveChangesAsync(cancellationToken);
     }
 }
