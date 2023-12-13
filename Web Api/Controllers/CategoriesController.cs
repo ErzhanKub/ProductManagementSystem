@@ -18,10 +18,13 @@ namespace Web_Api.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetCategories(CancellationToken cancellationToken)
         {
-            var response = await _categoryService.GetCategoriesAsync(cancellationToken);
-            if (response.IsSuccess)
-                return Ok(response.Value);
-            return BadRequest($"Operation failed: {response.Reasons}");
+            var response = await _categoryService.GetCategoriesAsync(cancellationToken).ConfigureAwait(false);
+            return response?.IsSuccess switch
+            {
+                true => Ok(response),
+                false => BadRequest($"Operation failed: {response.Reasons}"),
+                null => throw new ArgumentNullException(nameof(response)),
+            };
         }
 
         [HttpPost]
@@ -30,10 +33,13 @@ namespace Web_Api.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CreateCategory([FromBody] CategoryDto category, CancellationToken cancellationToken)
         {
-            var response = await _categoryService.CreateCategoryAsync(category, cancellationToken);
-            if (response.IsSuccess)
-                return Ok("Category created successfully");
-            return BadRequest($"Operation failed: {response.Reasons}");
+            var response = await _categoryService.CreateCategoryAsync(category, cancellationToken).ConfigureAwait(false);
+            return response?.IsSuccess switch
+            {
+                true => Created($"api/Categories/{response.Value}", category),
+                false => BadRequest($"Operation failed: {response.Reasons}"),
+                null => throw new ArgumentNullException(nameof(response)),
+            };
         }
 
         [HttpDelete("{id}")]
@@ -42,10 +48,13 @@ namespace Web_Api.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DeleteCategory([FromRoute] long id, CancellationToken cancellationToken)
         {
-            var response = await _categoryService.DeleteCategoryAsync(id, cancellationToken);
-            if (response.IsSuccess)
-                return Ok("Category deleted successfully");
-            return BadRequest($"Operation failed: {response.Reasons}");
+            var response = await _categoryService.DeleteCategoryAsync(id, cancellationToken).ConfigureAwait(false);
+            return response?.IsSuccess switch
+            {
+                true => NoContent(),
+                false => BadRequest($"Operation failed: {response.Reasons}"),
+                null => throw new ArgumentNullException(nameof(response)),
+            };
         }
     }
 }

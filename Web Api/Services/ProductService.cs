@@ -22,7 +22,7 @@ public sealed class ProductService
         _categoryRepository = categoryRepository ?? throw new ArgumentNullException(nameof(categoryRepository));
     }
 
-    public async Task<Result> CreateProductAsync(ProductDto productDto, CancellationToken cancellationToken)
+    public async Task<Result<long>> CreateProductAsync(ProductDto productDto, CancellationToken cancellationToken)
     {
         using (_logger.BeginScope(nameof(CreateProductAsync)))
         {
@@ -60,19 +60,17 @@ public sealed class ProductService
                 await _productRepository.AddAsync(product, cancellationToken).ConfigureAwait(false);
                 await _unitOfWork.SaveAndCommitAsync(cancellationToken).ConfigureAwait(false);
 
-                return Result.Ok();
+                return Result.Ok(product.Id);
             }
             catch (DbUpdateException ex)
             {
                 _logger.LogError(ex, "An error occurred while creating the product id: {id}, date: {time}", productDto.Id, DateTime.Now);
-                return Result.Fail("An error occurred while creating the product");
-                throw;
+                return Result.Fail<long>("An error occurred while creating the product");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while creating the product id: {id}, date: {time}", productDto.Id, DateTime.Now);
-                return Result.Fail("An error occurred while creating the product");
-                throw;
+                return Result.Fail<long>("An error occurred while creating the product");
             }
         }
     }
@@ -108,13 +106,11 @@ public sealed class ProductService
             {
                 _logger.LogError(ex, "An error occurred while receiving the product by: {id}, date: {time}", id, DateTime.Now);
                 return Result.Fail<ProductDto>("An error occurred while receiving the product");
-                throw;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while receiving the product by: {id}, date: {time}", id, DateTime.Now);
                 return Result.Fail<ProductDto>("An error occurred while receiving the product");
-                throw;
             }
         }
     }
@@ -125,7 +121,7 @@ public sealed class ProductService
         {
             try
             {
-                var products = await _productRepository.GetProductsByCategoryAsync(id, cancellationToken);
+                var products = await _productRepository.GetProductsAsync(cancellationToken, id);
 
                 var productsDto = products.Select(p => new ProductDto
                 {
@@ -144,13 +140,11 @@ public sealed class ProductService
             {
                 _logger.LogError(ex, "An error was received while receiving a product by category id: {id}, date: {time}", id, DateTime.Now);
                 return Result.Fail<List<ProductDto>>("An error occurred while receiving the product");
-                throw;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error was received while receiving a product by category id: {id}", id);
                 return Result.Fail<List<ProductDto>>("An error occurred while receiving the product");
-                throw;
             }
         }
     }
@@ -180,13 +174,11 @@ public sealed class ProductService
             {
                 _logger.LogError(ex, "An error was received while receiving goods by filter id: {id}, date: {time}", id, DateTime.Now);
                 return Result.Fail<List<ProductDto>>("An error was received while receiving goods by filter");
-                throw;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error was received while receiving goods by filter id: {id}, date: {time}", id, DateTime.Now);
                 return Result.Fail<List<ProductDto>>("An error was received while receiving goods by filter");
-                throw;
             }
         }
     }

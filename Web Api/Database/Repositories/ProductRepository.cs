@@ -14,38 +14,23 @@ internal sealed class ProductRepository : IProductRepository
         _appDbContext = appDbContext ?? throw new ArgumentNullException(nameof(appDbContext));
     }
 
-    public async Task AddAsync(Product product, CancellationToken cancellationToken)
-    {
+    public async Task AddAsync(Product product, CancellationToken cancellationToken) =>
         await _appDbContext.Products.AddAsync(product, cancellationToken).ConfigureAwait(false);
-    }
 
     public async Task DeleteAsync(long id, CancellationToken cancellationToken)
     {
         var product = await _appDbContext.Products.FindAsync(new object?[] { id }, cancellationToken: cancellationToken).ConfigureAwait(false);
-        if (product is not null)
-        {
-            _appDbContext.Products.Remove(product);
-        }
+        _appDbContext.Products.Remove(product!);
     }
 
-    public async Task<Product> GetByIdAsync(long id, CancellationToken cancellationToken)
-    {
-        var product = await _appDbContext.Products.Include(p => p.Category).FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
+    public async Task<Product> GetByIdAsync(long id, CancellationToken cancellationToken) =>
+        await _appDbContext.Products.FirstOrDefaultAsync(p => p.Id == id, cancellationToken) ??
+        throw new ArgumentNullException($"product is null");
 
-        if (product is null)
-            throw new ArgumentNullException($"{nameof(product)} is null");
-        return product;
-    }
-
-    public async Task<IEnumerable<Product>> GetAsync(CancellationToken cancellationToken)
-    {
-        return await _appDbContext.Products.Include(p => p.Category).AsNoTracking().ToListAsync(cancellationToken: cancellationToken);
-    }
-
-    public async Task<IEnumerable<Product>> GetProductsByCategoryAsync(long categoryId, CancellationToken cancellationToken)
-    {
-        return await _appDbContext.Products.Include(p => p.Category).Where(p => p.CategoryId == categoryId).ToListAsync(cancellationToken: cancellationToken);
-    }
+    public async Task<IEnumerable<Product>> GetProductsAsync(CancellationToken cancellationToken, long? categoryId = null) =>
+        await _appDbContext.Products.Include(p => p.Category).AsNoTracking()
+            .Where(p => categoryId == null || p.CategoryId == categoryId)
+            .ToListAsync(cancellationToken: cancellationToken);
 
     public async Task<IEnumerable<Product>> GetProductsByFilterAsync(long categoryId, Dictionary<string, string> filterParameters, CancellationToken cancellationToken)
     {
@@ -55,13 +40,11 @@ internal sealed class ProductRepository : IProductRepository
             var key = pair.Key;
             var value = pair.Value;
 
-            query = query.Where(p => p.Category.AdditionalFields.ContainsKey(key) && p.Category.AdditionalFields[key] == value);
+            query = query.Where(p => p.Category.AdditionalFields.Keys.Contains(key) && p.Category.AdditionalFields[key].ToString() == value);
         }
         return await query.ToListAsync(cancellationToken: cancellationToken);
     }
 
-    public void UpdateAsync(Product product, CancellationToken cancellationToken)
-    {
+    public void UpdateAsync(Product product, CancellationToken cancellationToken) =>
         _appDbContext.Products.Update(product);
-    }
 }

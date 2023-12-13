@@ -4,6 +4,7 @@ namespace Web_Api.Models.Entities;
 
 public sealed record Product
 {
+    [Key]
     public long Id { get; init; }
 
     [Required(ErrorMessage = "Name is required")]

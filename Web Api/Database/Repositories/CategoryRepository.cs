@@ -27,7 +27,7 @@ internal sealed class CategoryRepository : ICategoryRepository
         _appDbContext.Categories.Remove(category);
     }
 
-    public async Task<IEnumerable<Category>> GetAsync(CancellationToken cancellationToken)
+    public async Task<IEnumerable<Category>> GetCategoryAsync(CancellationToken cancellationToken)
     {
         return await _appDbContext.Categories.AsNoTracking().ToListAsync(cancellationToken);
     }
@@ -35,9 +35,7 @@ internal sealed class CategoryRepository : ICategoryRepository
     public async Task<Category> GetByIdAsync(long id, CancellationToken cancellationToken)
     {
         var category = await _appDbContext.Categories.FirstOrDefaultAsync(c => c.Id == id, cancellationToken: cancellationToken).ConfigureAwait(false);
-        if (category is null)
-            throw new ArgumentNullException(nameof(category));
-        return category;
+        return category ?? throw new ArgumentNullException(nameof(category));
     }
 
     public void UpdateAsync(Category category, CancellationToken cancellationToken)

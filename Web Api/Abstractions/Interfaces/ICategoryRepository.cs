@@ -3,4 +3,7 @@ using Web_Api.Models.Entities;
 
 namespace Web_Api.Abstractions.Interfaces;
 
-public interface ICategoryRepository : IGenericRepository<Category> { }
+public interface ICategoryRepository : IGenericRepository<Category>
+{
+    Task<IEnumerable<Category>> GetCategoryAsync(CancellationToken cancellationToken);
+}

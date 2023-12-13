@@ -26,7 +26,7 @@ public sealed class CategoryService
         {
             try
             {
-                var categories = await _repository.GetAsync(cancellationToken);
+                var categories = await _repository.GetCategoryAsync(cancellationToken);
                 var categoriesDto = categories.Select(c => new CategoryDto
                 {
                     Id = c.Id,
@@ -42,7 +42,6 @@ public sealed class CategoryService
             {
                 _logger.LogError(ex, "An error occurred while retrieving the category, date: {time}", DateTime.Now);
                 return Result.Fail<List<CategoryDto>>("An error occurred while retrieving the category");
-                throw;
             }
         }
     }
@@ -64,18 +63,16 @@ public sealed class CategoryService
             {
                 _logger.LogError(ex, "An error occurred while deleting a category, id: {id}, date: {time}", id, DateTime.Now);
                 return Result.Fail("An error occurred during deletion");
-                throw;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while deleting a category, id: {id}, date: {time}", id, DateTime.Now);
                 return Result.Fail("An error occurred during deletion");
-                throw;
             }
         }
     }
 
-    public async Task<Result> CreateCategoryAsync(CategoryDto categoryDto, CancellationToken cancellationToken)
+    public async Task<Result<long>> CreateCategoryAsync(CategoryDto categoryDto, CancellationToken cancellationToken)
     {
         using (_logger.BeginScope(nameof(CreateCategoryAsync)))
         {
@@ -91,13 +88,12 @@ public sealed class CategoryService
                 await _unitOfWork.SaveAndCommitAsync(cancellationToken);
 
                 _logger.LogInformation("Created category: {id}, date: {time}", category.Id, DateTime.Now);
-                return Result.Ok();
+                return Result.Ok(category.Id);
             }
             catch (DbUpdateException ex)
             {
                 _logger.LogError(ex, "An error occurred while creating the category id: {id}, date: {time}", categoryDto.Id, DateTime.Now);
-                return Result.Fail("An error occurred while creating the category");
-                throw;
+                return Result.Fail<long>("An error occurred while creating the category");
             }
         }
     }
