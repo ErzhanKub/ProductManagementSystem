@@ -34,16 +34,19 @@ internal sealed class ProductRepository : IProductRepository
 
     public async Task<IEnumerable<Product>> GetProductsByFilterAsync(long categoryId, Dictionary<string, string> filterParameters, CancellationToken cancellationToken)
     {
-        var query = _appDbContext.Products.Include(p => p.Category).Where(p => p.CategoryId == categoryId);
+        var products = await _appDbContext.Products.Include(p => p.Category).Where(p => p.CategoryId == categoryId).ToListAsync(cancellationToken: cancellationToken);
+
         foreach (var pair in filterParameters)
         {
             var key = pair.Key;
             var value = pair.Value;
 
-            query = query.Where(p => p.Category.AdditionalFields.Keys.Contains(key) && p.Category.AdditionalFields[key].ToString() == value);
+            products = products.Where(p => (p.AdditionalFields.ContainsKey(key) && p.AdditionalFields[key] == value) || (p.Category.AdditionalFields.ContainsKey(key) && p.Category.AdditionalFields[key] == value)).ToList();
         }
-        return await query.ToListAsync(cancellationToken: cancellationToken);
+
+        return products;
     }
+
 
     public void UpdateAsync(Product product, CancellationToken cancellationToken) =>
         _appDbContext.Products.Update(product);

@@ -21,7 +21,7 @@ namespace Web_Api.Controllers
             var response = await _categoryService.GetCategoriesAsync(cancellationToken).ConfigureAwait(false);
             return response?.IsSuccess switch
             {
-                true => Ok(response),
+                true => Ok(response.Value),
                 false => BadRequest($"Operation failed: {response.Reasons}"),
                 null => throw new ArgumentNullException(nameof(response)),
             };
@@ -29,7 +29,7 @@ namespace Web_Api.Controllers
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(CategoryDto), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CreateCategory([FromBody] CategoryDto category, CancellationToken cancellationToken)
         {
