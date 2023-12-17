@@ -52,7 +52,7 @@ namespace Web_Api.Controllers
             return response?.IsSuccess switch
             {
                 true => NoContent(),
-                false => BadRequest($"Operation failed: {response.Reasons}"),
+                false => BadRequest($"Operation failed: {response.Errors}"),
                 null => throw new ArgumentNullException(nameof(response)),
             };
         }

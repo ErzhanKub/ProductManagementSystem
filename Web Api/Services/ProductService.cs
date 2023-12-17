@@ -6,7 +6,9 @@ using Web_Api.Models.Contracts;
 using Web_Api.Models.Entities;
 
 namespace Web_Api.Services;
-
+/// <summary>
+/// Сервис для работы с продуктами.
+/// </summary>
 public sealed class ProductService
 {
     private readonly IProductRepository _productRepository;
@@ -16,14 +18,21 @@ public sealed class ProductService
 
     public ProductService(IProductRepository repository, ILogger<ProductService> logger, IUnitOfWork unitOfWork, ICategoryRepository categoryRepository)
     {
+        // Допольнительная проверка + Exception
         _productRepository = repository ?? throw new ArgumentNullException(nameof(repository));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _categoryRepository = categoryRepository ?? throw new ArgumentNullException(nameof(categoryRepository));
     }
-
+    /// <summary>
+    /// Асинхронный метод для создания продукта. 
+    /// </summary>
+    /// <param name="productDto">Продукт dto</param>
+    /// <param name="cancellationToken">Токен отмены</param>
+    /// <returns></returns>
     public async Task<Result<long>> CreateProductAsync(ProductDto productDto, CancellationToken cancellationToken)
     {
+        // Задаю облась логгирование.
         using (_logger.BeginScope(nameof(CreateProductAsync)))
         {
             try
@@ -32,8 +41,8 @@ public sealed class ProductService
 
                 if (category is null)
                     return Result.Fail("Category not found");
-
-                if (productDto.AdditionalFields != null && category.AdditionalFields != null)
+                // Проверка на наличие допольнительных полей у продукта + соотвествие с категорием.
+                if (productDto.AdditionalFields is not null && category.AdditionalFields is not null)
                 {
                     foreach (var field in productDto.AdditionalFields.Keys)
                     {
@@ -44,7 +53,7 @@ public sealed class ProductService
                         }
                     }
                 }
-
+                // Создание и маппинг productDto на product (Можно использовать AutoMapper/Mapster).
                 var product = new Product
                 {
                     Id = productDto.Id,
@@ -74,9 +83,15 @@ public sealed class ProductService
             }
         }
     }
-
+    /// <summary>
+    /// Асинхронный метод для получение продукта по id.
+    /// </summary>
+    /// <param name="id">Id продукта</param>
+    /// <param name="cancellationToken">Токен отмены</param>
+    /// <returns></returns>
     public async Task<Result<ProductDto>> GetProductByIdAsync(long id, CancellationToken cancellationToken)
     {
+        // Задаю облась логгирование.
         using (_logger.BeginScope(nameof(GetProductByIdAsync)))
         {
             try
@@ -114,7 +129,12 @@ public sealed class ProductService
             }
         }
     }
-
+    /// <summary>
+    /// Асинхронный метод для получение продукта с фильтрацией по категории id.
+    /// </summary>
+    /// <param name="id">Id категории</param>
+    /// <param name="cancellationToken">Токен отмены</param>
+    /// <returns></returns>
     public async Task<Result<List<ProductDto>>> GetProductsByCategoryAsync(long id, CancellationToken cancellationToken)
     {
         using (_logger.BeginScope(nameof(GetProductsByCategoryAsync)))
@@ -122,7 +142,7 @@ public sealed class ProductService
             try
             {
                 var products = await _productRepository.GetProductsAsync(cancellationToken, id);
-
+                //Создание Листа<productsDto> и маппинг через LINQ.
                 var productsDto = products.Select(p => new ProductDto
                 {
                     Id = p.Id,
@@ -148,7 +168,13 @@ public sealed class ProductService
             }
         }
     }
-
+    /// <summary>
+    /// Асинхронный метод для получения продукта по id категории и по допольнительным полям.
+    /// </summary>
+    /// <param name="id">Id категории</param>
+    /// <param name="filter">Фильтры поиска <key,value></param>
+    /// <param name="cancellationToken">Токен отмены</param>
+    /// <returns></returns>
     public async Task<Result<List<ProductDto>>> GetProductsByFilterAsync(long id, Dictionary<string, string> filter, CancellationToken cancellationToken)
     {
         using (_logger.BeginScope(nameof(GetProductsByFilterAsync)))

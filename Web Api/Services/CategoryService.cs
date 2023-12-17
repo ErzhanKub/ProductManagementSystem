@@ -6,7 +6,9 @@ using Web_Api.Models.Contracts;
 using Web_Api.Models.Entities;
 
 namespace Web_Api.Services;
-
+/// <summary>
+/// Сервис для рабоыт с категориями.
+/// </summary>
 public sealed class CategoryService
 {
     private readonly ICategoryRepository _repository;
@@ -19,7 +21,11 @@ public sealed class CategoryService
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
-
+    /// <summary>
+    /// Асинхронный метод для получние всех категории.
+    /// </summary>
+    /// <param name="cancellationToken">Токен отмены</param>
+    /// <returns></returns>
     public async Task<Result<List<CategoryDto>>> GetCategoriesAsync(CancellationToken cancellationToken)
     {
         using (_logger.BeginScope(nameof(GetCategoriesAsync)))
@@ -45,7 +51,12 @@ public sealed class CategoryService
             }
         }
     }
-
+    /// <summary>
+    /// Асинхронный метод для удаления категории по его id.
+    /// </summary>
+    /// <param name="id">Id категории</param>
+    /// <param name="cancellationToken">Токен отмены</param>
+    /// <returns></returns>
     public async Task<Result> DeleteCategoryAsync(long id, CancellationToken cancellationToken)
     {
         using (_logger.BeginScope(nameof(DeleteCategoryAsync)))
@@ -71,7 +82,12 @@ public sealed class CategoryService
             }
         }
     }
-
+    /// <summary>
+    /// Асинхронный метод для создание категории.
+    /// </summary>
+    /// <param name="categoryDto">Обьект категории dto</param>
+    /// <param name="cancellationToken">Токен отмены</param>
+    /// <returns></returns>
     public async Task<Result<long>> CreateCategoryAsync(CategoryDto categoryDto, CancellationToken cancellationToken)
     {
         using (_logger.BeginScope(nameof(CreateCategoryAsync)))
