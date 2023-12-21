@@ -1,58 +1,53 @@
-﻿using FluentResults;
-using Microsoft.EntityFrameworkCore;
-using System.Data.Common;
+﻿using AutoMapper;
+using FluentResults;
 using Web_Api.Abstractions.Interfaces;
-using Web_Api.Models.Contracts;
+using Web_Api.Models.Contracts.CategoryDto;
 using Web_Api.Models.Entities;
 
 namespace Web_Api.Services;
 /// <summary>
-/// Сервис для рабоыт с категориями.
+/// Сервис для работы с категориями.
 /// </summary>
 public sealed class CategoryService
 {
     private readonly ICategoryRepository _repository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<CategoryService> _logger;
+    private readonly IMapper _mapper;
 
-    public CategoryService(ICategoryRepository repository, IUnitOfWork unitOfWork, ILogger<CategoryService> logger)
+    public CategoryService(ICategoryRepository repository, IUnitOfWork unitOfWork, ILogger<CategoryService> logger, IMapper mapper)
     {
-        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
-        _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _repository = repository;
+        _unitOfWork = unitOfWork;
+        _logger = logger;
+        _mapper = mapper;
     }
     /// <summary>
-    /// Асинхронный метод для получние всех категории.
+    /// Получить список категорий.
     /// </summary>
     /// <param name="cancellationToken">Токен отмены</param>
     /// <returns></returns>
-    public async Task<Result<List<CategoryDto>>> GetCategoriesAsync(CancellationToken cancellationToken)
+    public async Task<Result<List<CategoryGetDto>>> GetCategoriesAsync(CancellationToken cancellationToken)
     {
         using (_logger.BeginScope(nameof(GetCategoriesAsync)))
         {
-            try
-            {
-                var categories = await _repository.GetCategoryAsync(cancellationToken);
-                var categoriesDto = categories.Select(c => new CategoryDto
-                {
-                    Id = c.Id,
-                    Name = c.Name,
-                    AdditionalFields = c.AdditionalFields,
-                }).ToList();
+            var categories = await _repository.GetCategoryAsync(cancellationToken);
 
-                _logger.LogInformation("Categories successfully received, date: {time}", DateTime.Now);
-
-                return Result.Ok(categoriesDto);
-            }
-            catch (DbException ex)
+            if (!categories.Any())
             {
-                _logger.LogError(ex, "An error occurred while retrieving the category, date: {time}", DateTime.Now);
-                return Result.Fail<List<CategoryDto>>("An error occurred while retrieving the category");
+                _logger.LogWarning("No categories found");
+                return Result.Fail<List<CategoryGetDto>>("No categories found");
             }
+
+            var categoriesDto = _mapper.Map<List<CategoryGetDto>>(categories);
+
+            _logger.LogInformation("Categories successfully received, count: {count}", categoriesDto.Count);
+
+            return Result.Ok(categoriesDto);
         }
     }
     /// <summary>
-    /// Асинхронный метод для удаления категории по его id.
+    /// Удалить категорию.
     /// </summary>
     /// <param name="id">Id категории</param>
     /// <param name="cancellationToken">Токен отмены</param>
@@ -61,56 +56,41 @@ public sealed class CategoryService
     {
         using (_logger.BeginScope(nameof(DeleteCategoryAsync)))
         {
-            try
-            {
-                await _repository.DeleteAsync(id, cancellationToken);
-                await _unitOfWork.SaveAndCommitAsync(cancellationToken);
+            var category = await _repository.GetByIdAsync(id, cancellationToken);
 
-                _logger.LogInformation("Deleted category: {value}, date: {time}", id, DateTime.Now);
+            if (category is null)
+            {
+                _logger.LogWarning("Attempted to delete category: {value}, but it does not exist", id);
+                return Result.Fail($"Category with id {id} does not exist.");
+            }
 
-                return Result.Ok();
-            }
-            catch (DbUpdateException ex)
-            {
-                _logger.LogError(ex, "An error occurred while deleting a category, id: {id}, date: {time}", id, DateTime.Now);
-                return Result.Fail("An error occurred during deletion");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while deleting a category, id: {id}, date: {time}", id, DateTime.Now);
-                return Result.Fail("An error occurred during deletion");
-            }
+            await _repository.DeleteAsync(id, cancellationToken);
+            await _unitOfWork.SaveAndCommitAsync(cancellationToken);
+
+            _logger.LogInformation("Deleted category: {value}", id);
+
+            return Result.Ok();
         }
     }
     /// <summary>
-    /// Асинхронный метод для создание категории.
+    /// Создать категорию.
     /// </summary>
-    /// <param name="categoryDto">Обьект категории dto</param>
-    /// <param name="cancellationToken">Токен отмены</param>
+    /// <param name="categoryDto">Категория dto</param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public async Task<Result<long>> CreateCategoryAsync(CategoryDto categoryDto, CancellationToken cancellationToken)
+    public async Task<Result<CategoryGetDto>> CreateCategoryAsync(CategoryPostDto categoryDto, CancellationToken cancellationToken)
     {
         using (_logger.BeginScope(nameof(CreateCategoryAsync)))
         {
-            try
-            {
-                var category = new Category
-                {
-                    Id = categoryDto.Id,
-                    Name = categoryDto.Name,
-                    AdditionalFields = categoryDto.AdditionalFields
-                };
-                await _repository.AddAsync(category, cancellationToken);
-                await _unitOfWork.SaveAndCommitAsync(cancellationToken);
+            var category = _mapper.Map<Category>(categoryDto);
 
-                _logger.LogInformation("Created category: {id}, date: {time}", category.Id, DateTime.Now);
-                return Result.Ok(category.Id);
-            }
-            catch (DbUpdateException ex)
-            {
-                _logger.LogError(ex, "An error occurred while creating the category id: {id}, date: {time}", categoryDto.Id, DateTime.Now);
-                return Result.Fail<long>("An error occurred while creating the category");
-            }
+            await _repository.AddAsync(category, cancellationToken);
+            await _unitOfWork.SaveAndCommitAsync(cancellationToken);
+
+            _logger.LogInformation("Created category: {id}, name: {name}", category.Id, category.Name);
+
+            var response = _mapper.Map<CategoryGetDto>(category);
+            return Result.Ok(response);
         }
     }
 }

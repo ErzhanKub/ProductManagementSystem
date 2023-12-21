@@ -3,6 +3,7 @@ using Serilog;
 using Web_Api.Abstractions.Interfaces;
 using Web_Api.Database;
 using Web_Api.Database.Repositories;
+using Web_Api.MappingProfiles;
 using Web_Api.Middleware;
 using Web_Api.Services;
 using WebApi.Database;
@@ -27,6 +28,8 @@ builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddTransient<ExceptionHandlingMiddlwere>();
+
+builder.Services.AddAutoMapper(typeof(CategoryMappingProfile));
 
 var app = builder.Build();
 

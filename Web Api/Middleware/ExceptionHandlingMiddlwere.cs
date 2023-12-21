@@ -1,5 +1,4 @@
-﻿using System.Net;
-using Web_Api.Models.Contracts;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace Web_Api.Middleware;
 /// <summary>
@@ -21,8 +20,8 @@ public sealed class ExceptionHandlingMiddlwere : IMiddleware
         catch (Exception ex)
         {
 
-            _logger.LogError(ex, ex.Message);
-            await HandleExeptionAsync(context, ex.Message, HttpStatusCode.InternalServerError);
+            _logger.LogError(ex, "Exception occurred: {message}", ex.Message);
+            await HandleExeptionAsync(context, ex.Message);
         }
     }
     /// <summary>
@@ -32,18 +31,20 @@ public sealed class ExceptionHandlingMiddlwere : IMiddleware
     /// <param name="exMassage">Сообщение ошибки</param>
     /// <param name="httpStatusCode">Статус код ошибки</param>
     /// <returns></returns>
-    private async Task HandleExeptionAsync(HttpContext context, string exMassage, HttpStatusCode httpStatusCode)
+    private async Task HandleExeptionAsync(HttpContext context, string exMassage)
     {
         HttpResponse response = context.Response;
-        response.ContentType = "application/json";
-        response.StatusCode = (int)httpStatusCode;
-
-        ErrorDto errorDto = new()
+        response.ContentType = "application/problem+json";
+        var problemDetails = new ProblemDetails
         {
-            Message = exMassage,
-            StatusCode = (int)httpStatusCode,
+            Title = "An error occurred",
+            Status = StatusCodes.Status500InternalServerError,
+            Detail = exMassage,
+            Instance = context.Request.Path
         };
 
-        await response.WriteAsJsonAsync(errorDto);
+        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+
+        await response.WriteAsJsonAsync(problemDetails);
     }
 }
