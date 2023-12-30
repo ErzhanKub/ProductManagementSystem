@@ -1,6 +1,7 @@
-﻿namespace Web_Api.Abstractions.Interfaces;
+﻿namespace WebApi.Abstractions.Interfaces;
 
 public interface IUnitOfWork
 {
-    Task SaveAndCommitAsync(CancellationToken cancellationToken);
+    Task<int> Complete(CancellationToken cancellationToken);
+    void Dispose();
 }

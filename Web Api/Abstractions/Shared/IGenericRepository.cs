@@ -1,4 +1,4 @@
-﻿namespace Web_Api.Abstractions.Shared;
+﻿namespace WebApi.Abstractions.Shared;
 
 public interface IGenericRepository<TEntity> where TEntity : class
 {

@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using Web_Api.Models.Contracts.CategoryDto;
-using Web_Api.Models.Entities;
+using WebApi.Models.Contracts.CategoryDto;
+using WebApi.Models.Entities;
 
-namespace Web_Api.MappingProfiles;
+namespace WebApi.MappingProfiles;
 
 internal sealed class CategoryMappingProfile : Profile
 {

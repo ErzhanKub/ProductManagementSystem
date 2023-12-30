@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace Web_Api.Middleware;
+namespace WebApi.Middleware;
 /// <summary>
 /// Middlwere для обработки глабальных исключении.
 /// </summary>

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Web_Api.Models.Entities;
+namespace WebApi.Models.Entities;
 
 public sealed record Product
 {

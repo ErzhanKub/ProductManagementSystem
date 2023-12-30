@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Web_Api.Models.Contracts.CategoryDto;
+namespace WebApi.Models.Contracts.CategoryDto;
 
 public sealed record CategoryPostDto
 {

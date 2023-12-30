@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
 using FluentResults;
-using Web_Api.Abstractions.Interfaces;
-using Web_Api.Models.Contracts.CategoryDto;
-using Web_Api.Models.Entities;
+using WebApi.Abstractions.Interfaces;
+using WebApi.Models.Contracts.CategoryDto;
+using WebApi.Models.Entities;
 
-namespace Web_Api.Services;
+namespace WebApi.Services;
 /// <summary>
-/// Сервис для работы с категориями.
+/// Service for working with categories.
 /// </summary>
 public sealed class CategoryService
 {
@@ -65,7 +65,7 @@ public sealed class CategoryService
             }
 
             await _repository.DeleteAsync(id, cancellationToken);
-            await _unitOfWork.SaveAndCommitAsync(cancellationToken);
+            await _unitOfWork.Complete(cancellationToken);
 
             _logger.LogInformation("Deleted category: {value}", id);
 
@@ -85,7 +85,7 @@ public sealed class CategoryService
             var category = _mapper.Map<Category>(categoryDto);
 
             await _repository.AddAsync(category, cancellationToken);
-            await _unitOfWork.SaveAndCommitAsync(cancellationToken);
+            await _unitOfWork.Complete(cancellationToken);
 
             _logger.LogInformation("Created category: {id}, name: {name}", category.Id, category.Name);
 

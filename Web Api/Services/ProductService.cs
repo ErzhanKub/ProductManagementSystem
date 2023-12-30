@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using FluentResults;
-using Web_Api.Abstractions.Interfaces;
-using Web_Api.Models.Contracts.ProductDto;
-using Web_Api.Models.Entities;
+using WebApi.Abstractions.Interfaces;
+using WebApi.Models.Contracts.ProductDto;
+using WebApi.Models.Entities;
 
-namespace Web_Api.Services;
+namespace WebApi.Services;
 /// <summary>
 /// Сервис для работы с продуктами.
 /// </summary>
@@ -56,7 +56,7 @@ public sealed class ProductService
             _logger.LogInformation("Created product: {id}", product.Id);
 
             await _productRepository.AddAsync(product, cancellationToken);
-            await _unitOfWork.SaveAndCommitAsync(cancellationToken);
+            await _unitOfWork.Complete(cancellationToken);
 
             var response = _mapper.Map<ProductGetDto>(product);
 

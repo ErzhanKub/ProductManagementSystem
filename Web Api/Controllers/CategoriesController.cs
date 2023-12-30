@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Web_Api.Models.Contracts.CategoryDto;
-using Web_Api.Services;
+using WebApi.Models.Contracts.CategoryDto;
+using WebApi.Services;
 
-namespace Web_Api.Controllers
+namespace WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

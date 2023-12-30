@@ -1,9 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Web_Api.Abstractions.Interfaces;
-using Web_Api.Models.Entities;
-using WebApi.Database;
+using WebApi.Abstractions.Interfaces;
+using WebApi.Models.Entities;
 
-namespace Web_Api.Database.Repositories;
+namespace WebApi.Database.Repositories;
 /// <summary>
 /// Репозиторий для работы с продуктами
 /// </summary>

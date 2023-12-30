@@ -1,10 +1,10 @@
 using AutoMapper;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Web_Api.Abstractions.Interfaces;
-using Web_Api.Models.Contracts.CategoryDto;
-using Web_Api.Models.Entities;
-using Web_Api.Services;
+using WebApi.Abstractions.Interfaces;
+using WebApi.Models.Contracts.CategoryDto;
+using WebApi.Models.Entities;
+using WebApi.Services;
 
 namespace WebApi.Tests;
 
