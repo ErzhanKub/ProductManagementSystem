@@ -1,12 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Serilog;
-using Web_Api.Abstractions.Interfaces;
-using Web_Api.Database;
-using Web_Api.Database.Repositories;
-using Web_Api.MappingProfiles;
-using Web_Api.Middleware;
-using Web_Api.Services;
+using WebApi.Abstractions.Interfaces;
 using WebApi.Database;
+using WebApi.Database.Repositories;
+using WebApi.MappingProfiles;
+using WebApi.Middleware;
+using WebApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

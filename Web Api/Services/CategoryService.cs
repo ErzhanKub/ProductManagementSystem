@@ -1,13 +1,10 @@
 ﻿using AutoMapper;
 using FluentResults;
-using Web_Api.Abstractions.Interfaces;
-using Web_Api.Models.Contracts.CategoryDto;
-using Web_Api.Models.Entities;
+using WebApi.Abstractions.Interfaces;
+using WebApi.Models.Contracts.CategoryDto;
+using WebApi.Models.Entities;
 
-namespace Web_Api.Services;
-/// <summary>
-/// Сервис для работы с категориями.
-/// </summary>
+namespace WebApi.Services;
 public sealed class CategoryService
 {
     private readonly ICategoryRepository _repository;
@@ -22,11 +19,7 @@ public sealed class CategoryService
         _logger = logger;
         _mapper = mapper;
     }
-    /// <summary>
-    /// Получить список категорий.
-    /// </summary>
-    /// <param name="cancellationToken">Токен отмены</param>
-    /// <returns></returns>
+
     public async Task<Result<List<CategoryGetDto>>> GetCategoriesAsync(CancellationToken cancellationToken)
     {
         using (_logger.BeginScope(nameof(GetCategoriesAsync)))
@@ -46,12 +39,7 @@ public sealed class CategoryService
             return Result.Ok(categoriesDto);
         }
     }
-    /// <summary>
-    /// Удалить категорию.
-    /// </summary>
-    /// <param name="id">Id категории</param>
-    /// <param name="cancellationToken">Токен отмены</param>
-    /// <returns></returns>
+
     public async Task<Result> DeleteCategoryAsync(long id, CancellationToken cancellationToken)
     {
         using (_logger.BeginScope(nameof(DeleteCategoryAsync)))
@@ -72,12 +60,7 @@ public sealed class CategoryService
             return Result.Ok();
         }
     }
-    /// <summary>
-    /// Создать категорию.
-    /// </summary>
-    /// <param name="categoryDto">Категория dto</param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
+
     public async Task<Result<CategoryGetDto>> CreateCategoryAsync(CategoryPostDto categoryDto, CancellationToken cancellationToken)
     {
         using (_logger.BeginScope(nameof(CreateCategoryAsync)))

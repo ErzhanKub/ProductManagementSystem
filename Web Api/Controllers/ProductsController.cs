@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Web_Api.Models.Contracts.ProductDto;
-using Web_Api.Services;
+using WebApi.Models.Contracts.ProductDto;
+using WebApi.Services;
 
-namespace Web_Api.Controllers;
+namespace WebApi.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -11,11 +11,6 @@ public class ProductsController : ControllerBase
     private readonly ProductService _productService;
     public ProductsController(ProductService productService) => _productService = productService;
 
-    /// <summary>
-    /// Получить продукт
-    /// </summary>
-    /// <param name="id">ID продукта</param>
-    /// <param name="cancellationToken">Токен отмены</param>
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(ProductGetDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
@@ -35,11 +30,6 @@ public class ProductsController : ControllerBase
         };
     }
 
-    /// <summary>
-    /// Получить продукты по категории
-    /// </summary>
-    /// <param name="id">ID категории</param>
-    /// <param name="cancellationToken">Токен отмены</param>
     [HttpGet("bycategory/{id}")]
     [ProducesResponseType(typeof(List<ProductGetDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
@@ -59,12 +49,6 @@ public class ProductsController : ControllerBase
         };
     }
 
-    /// <summary>
-    /// Получить продукты по фильтрам
-    /// </summary>
-    /// <param name="id">ID категории</param>
-    /// <param name="filter">Фильтр <key, value></param>
-    /// <param name="cancellationToken">Токен отмены</param>
     [HttpGet("byfilter/{id}")]
     [ProducesResponseType(typeof(List<ProductGetDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
@@ -84,11 +68,6 @@ public class ProductsController : ControllerBase
         };
     }
 
-    /// <summary>
-    /// Создать продукт
-    /// </summary>
-    /// <param name="product">Продукт</param>
-    /// <param name="cancellationToken">Токен отмены</param>
     [HttpPost]
     [ProducesResponseType(typeof(ProductGetDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]

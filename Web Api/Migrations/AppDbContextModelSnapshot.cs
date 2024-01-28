@@ -7,7 +7,7 @@ using WebApi.Database;
 
 #nullable disable
 
-namespace Web_Api.Migrations
+namespace WebApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
     partial class AppDbContextModelSnapshot : ModelSnapshot

@@ -8,7 +8,7 @@ using WebApi.Database;
 
 #nullable disable
 
-namespace Web_Api.Migrations
+namespace WebApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
     [Migration("20231212163443_CorrectEntities")]

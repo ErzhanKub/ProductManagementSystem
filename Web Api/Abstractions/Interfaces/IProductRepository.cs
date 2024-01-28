@@ -1,7 +1,7 @@
-﻿using Web_Api.Abstractions.Shared;
-using Web_Api.Models.Entities;
+﻿using WebApi.Abstractions.Shared;
+using WebApi.Models.Entities;
 
-namespace Web_Api.Abstractions.Interfaces;
+namespace WebApi.Abstractions.Interfaces;
 
 public interface IProductRepository : IGenericRepository<Product>
 {

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Web_Api.Models.Contracts.ProductDto;
+namespace WebApi.Models.Contracts.ProductDto;
 
 public sealed record ProductGetDto
 {

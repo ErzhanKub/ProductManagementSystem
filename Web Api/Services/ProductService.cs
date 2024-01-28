@@ -1,13 +1,11 @@
 ﻿using AutoMapper;
 using FluentResults;
-using Web_Api.Abstractions.Interfaces;
-using Web_Api.Models.Contracts.ProductDto;
-using Web_Api.Models.Entities;
+using WebApi.Abstractions.Interfaces;
+using WebApi.Models.Contracts.ProductDto;
+using WebApi.Models.Entities;
 
-namespace Web_Api.Services;
-/// <summary>
-/// Сервис для работы с продуктами.
-/// </summary>
+namespace WebApi.Services;
+
 public sealed class ProductService
 {
     private readonly IProductRepository _productRepository;
@@ -24,12 +22,7 @@ public sealed class ProductService
         _categoryRepository = categoryRepository;
         _mapper = mapper;
     }
-    /// <summary>
-    /// Создать продукт.
-    /// </summary>
-    /// <param name="productDto">Продукт dto</param>
-    /// <param name="cancellationToken">Токен отмены</param>
-    /// <returns></returns>
+
     public async Task<Result<ProductGetDto>> CreateProductAsync(ProductPostDto productDto, CancellationToken cancellationToken)
     {
         using (_logger.BeginScope(nameof(CreateProductAsync)))
@@ -41,7 +34,7 @@ public sealed class ProductService
                 _logger.LogWarning("Attempted to access category: {value}, but it does not exist", productDto.CategoryId);
                 return Result.Fail($"Category with id {productDto.CategoryId} does not exist.");
             }
-            //ToDo
+
             if (productDto.AdditionalFields is not null && category.AdditionalFields is not null)
             {
                 var invalidFields = productDto.AdditionalFields.Keys.Except(category.AdditionalFields.Keys).ToList();
@@ -63,12 +56,7 @@ public sealed class ProductService
             return Result.Ok(response);
         }
     }
-    /// <summary>
-    /// Получение продукта.
-    /// </summary>
-    /// <param name="id">Id продукта</param>
-    /// <param name="cancellationToken">Токен отмены</param>
-    /// <returns></returns>
+
     public async Task<Result<ProductGetDto>> GetProductByIdAsync(long id, CancellationToken cancellationToken)
     {
         using (_logger.BeginScope(nameof(GetProductByIdAsync)))
@@ -87,12 +75,7 @@ public sealed class ProductService
             return Result.Ok(productDto);
         }
     }
-    /// <summary>
-    /// Получить продукты по категории.
-    /// </summary>
-    /// <param name="id">Id категории</param>
-    /// <param name="cancellationToken">Токен отмены</param>
-    /// <returns></returns>
+
     public async Task<Result<List<ProductGetDto>>> GetProductsByCategoryAsync(long id, CancellationToken cancellationToken)
     {
         using (_logger.BeginScope(nameof(GetProductsByCategoryAsync)))
@@ -111,13 +94,7 @@ public sealed class ProductService
             return Result.Ok(productsDto);
         }
     }
-    /// <summary>
-    /// Получить продукты по фильтрам.
-    /// </summary>
-    /// <param name="id">Id категории</param>
-    /// <param name="filter">Фильтры поиска <key,value></param>
-    /// <param name="cancellationToken">Токен отмены</param>
-    /// <returns></returns>
+
     public async Task<Result<List<ProductGetDto>>> GetProductsByFilterAsync(long id, Dictionary<string, string> filter, CancellationToken cancellationToken)
     {
         using (_logger.BeginScope(nameof(GetProductsByFilterAsync)))

@@ -1,7 +1,7 @@
-﻿using Web_Api.Abstractions.Interfaces;
+﻿using WebApi.Abstractions.Interfaces;
 using WebApi.Database;
 
-namespace Web_Api.Database;
+namespace WebApi.Database;
 
 internal sealed class UnitOfWork : IUnitOfWork
 {

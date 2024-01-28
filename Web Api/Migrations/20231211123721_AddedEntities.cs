@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace Web_Api.Migrations
+namespace WebApi.Migrations
 {
     /// <inheritdoc />
     public partial class AddedEntities : Migration

@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Web_Api.Models.Contracts.CategoryDto;
-using Web_Api.Services;
+using WebApi.Models.Contracts.CategoryDto;
+using WebApi.Services;
 
-namespace Web_Api.Controllers
+namespace WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -12,11 +12,6 @@ namespace Web_Api.Controllers
 
         public CategoriesController(CategoryService categoryService) => _categoryService = categoryService;
 
-        /// <summary>
-        /// Получить список категории
-        /// </summary>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
         [HttpGet]
         [ProducesResponseType(typeof(List<CategoryGetDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
@@ -36,12 +31,6 @@ namespace Web_Api.Controllers
             };
         }
 
-        /// <summary>
-        /// Создать категорию
-        /// </summary>
-        /// <param name="category">Категория dto</param>
-        /// <param name="cancellationToken">Токен отмены</param>
-        /// <returns></returns>
         [HttpPost]
         [ProducesResponseType(typeof(CategoryGetDto), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
@@ -61,12 +50,6 @@ namespace Web_Api.Controllers
             };
         }
 
-        /// <summary>
-        /// Удалить категорию
-        /// </summary>
-        /// <param name="id">ID категории</param>
-        /// <param name="cancellationToken">Токен отмены</param>
-        /// <returns></returns>
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]

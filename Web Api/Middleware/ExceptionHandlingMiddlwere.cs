@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace Web_Api.Middleware;
-/// <summary>
-/// Middlwere для обработки глабальных исключении.
-/// </summary>
+namespace WebApi.Middleware;
+
 public sealed class ExceptionHandlingMiddlwere : IMiddleware
 {
     private readonly ILogger<ExceptionHandlingMiddlwere> _logger;
@@ -24,13 +22,7 @@ public sealed class ExceptionHandlingMiddlwere : IMiddleware
             await HandleExeptionAsync(context, ex.Message);
         }
     }
-    /// <summary>
-    /// Асинхронный метод обработки исключении. 
-    /// </summary>
-    /// <param name="context">HttpContext</param>
-    /// <param name="exMassage">Сообщение ошибки</param>
-    /// <param name="httpStatusCode">Статус код ошибки</param>
-    /// <returns></returns>
+
     private async Task HandleExeptionAsync(HttpContext context, string exMassage)
     {
         HttpResponse response = context.Response;
